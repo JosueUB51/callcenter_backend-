@@ -17,4 +17,23 @@ class CreateCaseRequest(BaseModel):
 
 class FeedbackRequest(BaseModel):
     case_id: int
-    helpful: bool  
+    helpful: bool
+
+
+class BinnibusStop(BaseModel):
+    stop_order: int
+    stop_name: str
+    latitude: float
+    longitude: float
+    description: Optional[str] = None
+
+
+class BinnibusRoute(BaseModel):
+    route_code: str
+    route_name: str
+    display_name: str
+    origin: str
+    destination: str
+    description: Optional[str] = None
+    stops: list[BinnibusStop]
+    path: list[list[float]] = []

@@ -1,15 +1,30 @@
-import os
 from openai import OpenAI
-from dotenv import load_dotenv
 
-load_dotenv()
+from app.settings import API_BASE_URL, API_KEY, EMBEDDING_MODEL
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-MODEL = os.getenv("EMBEDDING_MODEL", "text-embedding-3-small")
+client = OpenAI(
+    base_url=API_BASE_URL,
+    api_key=API_KEY,
+)
 
-def embed(text: str) -> list[float]:
+
+def _embed(text: str) -> list[float]:
     text = (text or "").strip()
     if not text:
-        raise ValueError("Texto vacío para embedding")
-    resp = client.embeddings.create(model=MODEL, input=text)
+        raise ValueError("Texto vacio para embedding")
+
+    resp = client.embeddings.create(
+        model=EMBEDDING_MODEL,
+        input=text,
+    )
     return resp.data[0].embedding
+
+
+def embed_query(text: str) -> list[float]:
+    # E5 retrieval works best when search queries use the "query:" prefix.
+    return _embed(f"query: {text}")
+
+
+def embed_passage(text: str) -> list[float]:
+    # Stored KB cases should be embedded as passages/documents.
+    return _embed(f"passage: {text}")
